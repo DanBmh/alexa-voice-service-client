@@ -75,6 +75,57 @@ class ConnectionManager:
         response = self.connection.get_response(stream_id)
         assert response.status in (http.client.NO_CONTENT, http.client.OK)
 
+    def set_language(self, language, device_state, authentication_headers):
+        """
+        Set voice-service language
+        For possible languages, see bottom of:
+          https://developer.amazon.com/en-US/docs/alexa/alexa-voice-service/settings.html
+        """
+
+        payload = {
+            'context': device_state,
+            'event': {
+                'header': {
+                    'namespace': 'Settings',
+                    'name': 'SettingsUpdated',
+                    'messageId': ''
+                },
+                "payload": {
+                    "settings": [
+                        {
+                            "key": "locale",
+                            "value": language
+                        }
+                    ]
+                }
+            }
+        }
+        multipart_data = MultipartEncoder(
+            fields=[
+                (
+                    'metadata', (
+                        'metadata',
+                        json.dumps(payload),
+                        'application/json',
+                        {'Content-Disposition': "form-data; name='metadata'"}
+                    )
+                ),
+            ],
+            boundary='boundary'
+        )
+        headers = {
+            **authentication_headers,
+            'Content-Type': multipart_data.content_type
+        }
+        stream_id = self.connection.request(
+            'POST',
+            '/v20160207/events',
+            body=multipart_data,
+            headers=headers,
+        )
+        response = self.connection.get_response(stream_id)
+        return self.parse_response(response)
+
     def send_audio_file(
         self, audio_file, device_state, authentication_headers,
         dialog_request_id, distance_profile, audio_format

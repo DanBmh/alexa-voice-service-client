@@ -18,8 +18,9 @@ class AlexaClient:
     connection_manager = None
     device_manager = None
     base_url = None
+    language = None
 
-    def __init__(self, client_id, secret, refresh_token, base_url=None):
+    def __init__(self, client_id, secret, refresh_token, base_url=None, language=None):
         self.authentication_manager = self.authentication_manager_class(
             client_id=client_id, secret=secret, refresh_token=refresh_token,
         )
@@ -27,12 +28,17 @@ class AlexaClient:
         self.connection_manager = self.connection_manager_class()
         self.ping_manager = self.ping_manager_class(60*4, self.ping)
         self.base_url = base_url
+        self.language = language
 
     def connect(self):
         self.authentication_manager.prefetch_api_token()
         self.connection_manager.create_connection(base_url=self.base_url)
         self.establish_downchannel_stream()
         self.synchronise_device_state()
+
+        if self.language is not None:
+            self.set_language(language=self.language)
+
         self.ping_manager.start()
 
     def conditional_ping(self):
@@ -49,6 +55,15 @@ class AlexaClient:
             return self.connection_manager.synchronise_device_state(
                 authentication_headers=headers,
                 device_state=self.device_manager.get_device_state(),
+            )
+
+    def set_language(self, language):
+        with self.ping_manager.update_ping_deadline():
+            headers = self.authentication_manager.get_headers()
+            return self.connection_manager.set_language(
+                authentication_headers=headers,
+                device_state=self.device_manager.get_device_state(),
+                language=language
             )
 
     def send_audio_file(

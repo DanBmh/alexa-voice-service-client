@@ -164,6 +164,22 @@ The default base URL is Europe. The available constants are BASE_URL_EUROPE, BAS
 
 [Read more](https://developer.amazon.com/docs/alexa-voice-service/api-overview.html#endpoints)
 
+### Language
+You can also change the language Alexa is using for audio transcription:
+
+```
+from alexa_client.alexa_client import constants
+
+client = AlexaClient(
+    client_id='my-client-id',
+    secret='my-secret',
+    refresh_token='my-refresh-token',
+    language="de-DE"
+)
+```
+
+For possible languages, see bottom of: [link](https://developer.amazon.com/en-US/docs/alexa/alexa-voice-service/settings.html)
+
 ## Authentication
 
 To use AVS you must first have a [developer account](http://developer.amazon.com). Then register your product [here](https://developer.amazon.com/avs/home.html#/avs/products/new). Choose "Application" under "Is your product an app or a device"?

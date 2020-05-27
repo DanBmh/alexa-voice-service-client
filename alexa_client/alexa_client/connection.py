@@ -76,11 +76,7 @@ class ConnectionManager:
         assert response.status in (http.client.NO_CONTENT, http.client.OK)
 
     def set_language(self, language, device_state, authentication_headers):
-        """
-        Set voice-service language
-        For possible languages, see bottom of:
-          https://developer.amazon.com/en-US/docs/alexa/alexa-voice-service/settings.html
-        """
+        """ Set voice-service language """
 
         payload = {
             'context': device_state,

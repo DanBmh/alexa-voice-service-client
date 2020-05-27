@@ -58,6 +58,27 @@ def test_base_url(client):
     )
 
 
+def test_change_language(client):
+
+    class TestAlexaClient(AlexaClient):
+        authentication_manager_class = mock.Mock()
+        device_manager_class = mock.Mock()
+        connection_manager_class = mock.Mock()
+        ping_manager_class = mock.Mock()
+
+    client = TestAlexaClient(
+        client_id='test_client_id',
+        secret='test_secret',
+        refresh_token='test_refresh_token',
+        language="de-DE"
+    )
+    client.ping_manager.update_ping_deadline = mock.MagicMock()
+
+    client.connect()
+
+    assert client.connection_manager.create_connection.call_count == 1
+
+
 def test_client_connect(client):
     client.connect()
 

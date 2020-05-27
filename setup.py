@@ -22,7 +22,7 @@ setup(
     extras_require={
         'test': [
             'flake8==3.4.0',
-            'freezegun==0.3.9',
+            'freezegun==0.3.15',
             'pytest-cov==2.5.1',
             'pytest-sugar==0.9.0',
             'pytest==3.2.0',
